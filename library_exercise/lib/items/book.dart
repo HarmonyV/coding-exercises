@@ -41,6 +41,8 @@ class Book extends LibraryItem {
       return;
     }
     isAvailable = false;
+    borrowDate = DateTime.now();
+    toReturnDate = borrowDate!.copyWith(day: borrowDate!.day + 12);
     print(
         "you succesfully borrowed the Book: $title with ISBN: $publicationID");
   }
@@ -53,6 +55,8 @@ class Book extends LibraryItem {
       return;
     }
     isAvailable = true;
+    borrowDate = null;
+    toReturnDate = null;
     print(
         "Thanks for returning the Book: $title with the isbn: $publicationID");
   }

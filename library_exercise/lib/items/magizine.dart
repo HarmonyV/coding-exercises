@@ -29,6 +29,8 @@ class Magazine extends LibraryItem {
       return;
     }
     isAvailable = false;
+    borrowDate = DateTime.now();
+    toReturnDate = borrowDate!.copyWith(day: borrowDate!.day + 12);
     print(
         "You successfully borrowed the magazine: $title with ISSN: $publicationID");
   }
@@ -41,6 +43,8 @@ class Magazine extends LibraryItem {
       return;
     }
     isAvailable = true;
+    borrowDate = null;
+    toReturnDate = null;
     print("Thanks for returning the magazine: $title");
   }
 }
