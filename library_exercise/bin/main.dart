@@ -4,9 +4,6 @@ import 'package:library_exercise/items/library_item.dart';
 import 'package:library_exercise/items/magizine.dart';
 import 'package:library_exercise/users/teacher.dart';
 
-import 'package:collection/collection.dart';
-import 'package:library_exercise/users/user.dart';
-
 void main() {
   Library myLibrary = Library(libraryName: "My Awesome Library");
 
@@ -38,16 +35,12 @@ void main() {
   myLibrary.addLibraryItems([magazine, book1, book2]);
   myLibrary.sortBy(Acces.isAvailable);
 
-  myLibrary.createTeacherMember("Mr. Smith", [Subject.english, Subject.sport]);
+  final mrSmith =
+      Teacher(name: "Mr. Smith", subjects: [Subject.english, Subject.sport]);
+  myLibrary.addMember(mrSmith);
 
-  User? mrSmith =
-      myLibrary.members.firstWhereOrNull((user) => user.name == "Mr. Smith");
+  mrSmith.borrowItems([book1], myLibrary);
 
-  if (mrSmith != null && mrSmith is Teacher) {
-    mrSmith.borrowItems([book1], myLibrary);
-  }
-
-  myLibrary.generateReport(Reports.borrowedBooksByUsers);
-  myLibrary.generateReport(Reports.overdueItems);
-  myLibrary.generateReport(Reports.lastBorrowedBookByUser, mrSmith);
+  myLibrary.listBorrowedBooksByAllUsers();
+  myLibrary.listOverdueItems();
 }

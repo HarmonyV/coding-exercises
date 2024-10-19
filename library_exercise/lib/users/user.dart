@@ -26,6 +26,8 @@ class User {
   UnmodifiableListView<LibraryItem> get borrowedHistory =>
       UnmodifiableListView(_borrowedHistory);
 
+  LibraryItem get lastBorrowed => _borrowedHistory.last;
+
   UnmodifiableMapView<String, double> get returnedItemsWithFee =>
       UnmodifiableMapView(_returnedItemsWithFee);
 

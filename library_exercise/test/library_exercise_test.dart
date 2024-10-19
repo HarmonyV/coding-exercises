@@ -16,8 +16,6 @@ void main() {
 
   myLibrary.addMember(mrSmith);
 
-  User? alice;
-
   Map<String, dynamic> bookData = {
     'title': '1984',
     'author': 'George Orwell',
@@ -48,11 +46,13 @@ void main() {
   });
 
   test("Create a user", () {
-    myLibrary.createStudentMember("Alice", GradeLvl.middleSchool);
+    final alice = Student(name: "Alice", gradeLvl: GradeLvl.elementarySchool);
+    myLibrary.addMember(alice);
 
-    alice = myLibrary.members.firstWhereOrNull((user) => user.name == "Alice");
+    User? testAlice =
+        myLibrary.members.firstWhereOrNull((user) => user.name == "Alice");
 
-    expect(alice != null && alice is Student, true);
+    expect(testAlice is Student, true);
   });
 
   test("Borrow item", () {
