@@ -19,6 +19,6 @@ class Student extends User {
     required super.name,
     required this.gradeLvl,
   }) : super(
-          borrowLimit: 3,
+          myBorrowLimit: 3,
         );
 }

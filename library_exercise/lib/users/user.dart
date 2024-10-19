@@ -1,65 +1,67 @@
-import 'dart:math';
+import 'dart:collection';
 
-import 'package:library_exercise/institutes/library.dart';
+import 'package:library_exercise/library.dart';
 import 'package:library_exercise/items/library_item.dart';
+import 'package:uuid/uuid.dart';
 
 class User {
   User({
-    required String name,
-    int borrowLimit = defaultBorrowLimit,
-  })  : _name = name,
-        _borrowLimit = borrowLimit,
-        _userID = "${Random().nextInt(10000)}.${Random().nextInt(100)}";
+    required this.name,
+    int? myBorrowLimit,
+  })  : borrowLimit = myBorrowLimit ?? defaultBorrowLimit,
+        userID = Uuid().v1();
 
-  final String _name;
-  final String _userID;
-  final int _borrowLimit;
+  final String name;
+  final String userID;
+  final int borrowLimit;
   final _borrowedItems = <LibraryItem>[];
-  final _overdueItems = <LibraryItem>[];
   final _borrowedHistory = <LibraryItem>[];
   final _returnedItemsWithFee = <String, double>{};
-  var _feesToPay = 0.0;
 
   static const int defaultBorrowLimit = 2;
 
-  String get name => _name;
-  String get userID => _userID;
-  int get borrowLimit => _borrowLimit;
-  List<LibraryItem> get borrowedItems => _borrowedItems;
-  List<LibraryItem> get borrowedHistory => _borrowedHistory;
-  Map<String, double> get returnedItemsWithFee => _returnedItemsWithFee;
+  UnmodifiableListView<LibraryItem> get borrowedItems =>
+      UnmodifiableListView(_borrowedItems);
 
-  List<LibraryItem> get overdueItems {
-    _overdueItems.clear();
-    checkForOverdueItems();
+  UnmodifiableListView<LibraryItem> get borrowedHistory =>
+      UnmodifiableListView(_borrowedHistory);
 
-    return _overdueItems;
+  UnmodifiableMapView<String, double> get returnedItemsWithFee =>
+      UnmodifiableMapView(_returnedItemsWithFee);
+
+  UnmodifiableListView<LibraryItem> get overdueItems {
+    return UnmodifiableListView(
+        _borrowedItems.where((i) => i.isOverdue() == true).toList());
   }
 
-  double get feesToPay {
-    _feesToPay = 0;
+  double get amountOwed {
+    var sum = 0.0;
 
     for (final item in overdueItems) {
-      _feesToPay += item.overdueFee();
+      sum += item.overdueFee();
     }
 
     for (final fee in _returnedItemsWithFee.values) {
-      _feesToPay += fee;
+      sum += fee;
     }
 
-    return _feesToPay;
+    return sum;
   }
 
   void borrowItems(List<LibraryItem> items, Library library) {
-    if (!canBorrowMoreItems()) return;
+    if (!canBorrowMoreItems()) {
+      print(
+          "You can't borrow any items. Please check if you have any overdue items, unpayed fees or reached your borrow-limit");
+      return;
+    }
 
     for (final item in items) {
-      if (reachedLimit()) return;
+      if (hasReachedLimit()) {
+        print("You reached your borrow-limit. No more items can be borrowed");
+        return;
+      }
 
-      library.logistic.inventory
-          .firstWhere((i) => i.publicationID == item.publicationID)
-          .borrow();
-
+      item.borrow();
       _borrowedItems.add(item);
       _borrowedHistory.add(item);
     }
@@ -80,42 +82,34 @@ class User {
     }
   }
 
-  void checkForOverdueItems() {
-    for (final item in _borrowedItems) {
-      if (item.isOverdue()) {
-        _overdueItems.add(item);
-      }
-    }
-  }
-
   bool canBorrowMoreItems() {
-    if (overdueItems.isNotEmpty || feesToPay > 0) {
-      print(
-          "There are overdue Items in you posetion. please return them before borrowing any new Items");
-      print("Items in Question are: ${getOverdueItemDetails()}");
-      print(_feesToPay);
-      return false;
-    }
+    if (overdueItems.isNotEmpty || amountOwed > 0) return false;
 
-    return !reachedLimit();
+    return !hasReachedLimit();
   }
 
-  List<Map<String, dynamic>> getOverdueItemDetails() {
+  UnmodifiableListView<Map<String, dynamic>> overdueItemDetails() {
     final overdueDetails = <Map<String, dynamic>>[];
     for (final item in overdueItems) {
-      final itemDetails = item.getDetails();
-      itemDetails["overdueFee"] = item.overdueFee();
-      overdueDetails.add(itemDetails);
+      final refference = <String, dynamic>{
+        "Title": item.title,
+        "ID": item.publicationID,
+        "Fee": item.overdueFee()
+      };
+      overdueDetails.add(refference);
     }
-    return overdueDetails;
+    return UnmodifiableListView(overdueDetails);
   }
 
-  bool reachedLimit() {
-    if (_borrowedItems.length >= borrowLimit) {
-      print("You already reached your limit for borrowed books.");
-      print("You have to return the books before borrowing a new one.");
-      return true;
-    }
+  bool hasReachedLimit() {
+    if (_borrowedItems.length >= borrowLimit) return true;
+
     return false;
   }
+
+  @override
+  bool operator ==(Object other) => other is User && other.userID == userID;
+
+  @override
+  int get hashCode => userID.hashCode;
 }

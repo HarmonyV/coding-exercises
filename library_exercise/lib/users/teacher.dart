@@ -16,6 +16,6 @@ class Teacher extends User {
     required super.name,
     required this.subjects,
   }) : super(
-          borrowLimit: 5,
+          myBorrowLimit: 5,
         );
 }
