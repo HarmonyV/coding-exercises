@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:library_exercise/items/library_item.dart';
 
 class Magazine extends LibraryItem {
@@ -14,37 +16,9 @@ class Magazine extends LibraryItem {
         );
 
   @override
-  Map<String, dynamic> getDetails() {
-    return {
-      "Title": title,
-      "Publisher": publisher,
-      "Type": genre,
-    };
-  }
-
-  @override
-  void borrow() {
-    if (!isAvailable) {
-      print("This magazine is not available");
-      return;
-    }
-    isAvailable = false;
-    borrowDate = DateTime.now();
-    toReturnDate = borrowDate!.copyWith(day: borrowDate!.day + 12);
-    print(
-        "You successfully borrowed the magazine: $title with ISSN: $publicationID");
-  }
-
-  @override
-  void returnItem() {
-    if (isAvailable) {
-      print(
-          "The magazine: $title with ISSN: $publicationID, hasn't been borrowed yet");
-      return;
-    }
-    isAvailable = true;
-    borrowDate = null;
-    toReturnDate = null;
-    print("Thanks for returning the magazine: $title");
-  }
+  UnmodifiableMapView<String, dynamic> get details => UnmodifiableMapView({
+        "Title": title,
+        "Publisher": publisher,
+        "Type": genre,
+      });
 }

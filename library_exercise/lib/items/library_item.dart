@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'package:collection/collection.dart';
+import 'package:uuid/uuid.dart';
 
 enum Genre {
   romance(string: "Romance"),
@@ -28,6 +29,7 @@ abstract class LibraryItem {
   DateTime? borrowDate;
   final double baseFee;
   final double interestRate;
+  abstract final UnmodifiableMapView<String, dynamic> details;
 
   LibraryItem(
       {required this.title,
@@ -38,10 +40,7 @@ abstract class LibraryItem {
       required this.interestRate,
       this.isAvailable = true,
       String? newId})
-      : publicationID =
-            newId ?? "${Random().nextInt(10000)}.${Random().nextInt(100)}";
-
-  Map<String, dynamic> getDetails();
+      : publicationID = newId ?? Uuid().v1();
 
   bool isOverdue() {
     if (toReturnDate == null) return false;
@@ -58,6 +57,30 @@ abstract class LibraryItem {
     return overdueDay * baseFee * interestRate;
   }
 
-  void borrow();
-  void returnItem();
+  void borrow() {
+    if (!isAvailable) {
+      print("The item is not available");
+      return;
+    }
+    isAvailable = false;
+    borrowDate = DateTime.now();
+    toReturnDate = borrowDate!.copyWith(day: borrowDate!.day + 12);
+    print("you succesfully borrowed: ${toString()}.");
+  }
+
+  void returnItem() {
+    if (isAvailable) {
+      print("${toString()}, hasn't been borrowed yet");
+      return;
+    }
+    isAvailable = true;
+    borrowDate = null;
+    toReturnDate = null;
+    print("Thanks for returning ${toString()}.");
+  }
+
+  @override
+  String toString() {
+    return "$title with the ID: $publicationID";
+  }
 }
