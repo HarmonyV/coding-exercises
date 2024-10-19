@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:library_exercise/institutes/library.dart';
+import 'package:library_exercise/library.dart';
 import 'package:library_exercise/items/book.dart';
 import 'package:library_exercise/items/library_item.dart';
 import 'package:library_exercise/items/magizine.dart';
@@ -14,7 +14,7 @@ void main() {
   final mrSmith =
       Teacher(name: "Mr. Smith", subjects: [Subject.biology, Subject.english]);
 
-  myLibrary.administration.addMember(mrSmith);
+  myLibrary.addMember(mrSmith);
 
   User? alice;
 
@@ -33,12 +33,12 @@ void main() {
     genre: Genre.science,
   );
 
-  myLibrary.logistic.addLibraryItems([magazine]);
+  myLibrary.addLibraryItems([magazine]);
 
   test("add item to library", () {
-    myLibrary.logistic.addLibraryItems([magazine]);
+    myLibrary.addLibraryItems([magazine]);
 
-    expect(myLibrary.logistic.inventory.contains(magazine), true);
+    expect(myLibrary.inventory.contains(magazine), true);
   });
 
   test("Book from json", () {
@@ -48,11 +48,9 @@ void main() {
   });
 
   test("Create a user", () {
-    myLibrary.administration
-        .createStudentMember("Alice", GradeLvl.middleSchool);
+    myLibrary.createStudentMember("Alice", GradeLvl.middleSchool);
 
-    alice = myLibrary.administration.members
-        .firstWhereOrNull((user) => user.name == "Alice");
+    alice = myLibrary.members.firstWhereOrNull((user) => user.name == "Alice");
 
     expect(alice != null && alice is Student, true);
   });
@@ -60,17 +58,11 @@ void main() {
   test("Borrow item", () {
     mrSmith.borrowItems([magazine], myLibrary);
 
-    expect(
-        magazine.isAvailable == false &&
-            myLibrary.checkAvailability(magazine) == false,
-        true);
+    expect(magazine.isAvailable == false, true);
   });
 
   test("Return item", () {
     mrSmith.returnItems([magazine]);
-    expect(
-        magazine.isAvailable == true &&
-            myLibrary.checkAvailability(magazine) == true,
-        true);
+    expect(magazine.isAvailable == true, true);
   });
 }

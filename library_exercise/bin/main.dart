@@ -1,5 +1,4 @@
-import 'package:library_exercise/institutes/accounting.dart';
-import 'package:library_exercise/institutes/library.dart';
+import 'package:library_exercise/library.dart';
 import 'package:library_exercise/items/book.dart';
 import 'package:library_exercise/items/library_item.dart';
 import 'package:library_exercise/items/magizine.dart';
@@ -36,20 +35,19 @@ void main() {
     genre: Genre.science,
   );
 
-  myLibrary.logistic.addLibraryItems([magazine, book1, book2]);
-  myLibrary.listAvailableItems();
+  myLibrary.addLibraryItems([magazine, book1, book2]);
+  myLibrary.sortBy(Acces.isAvailable);
 
-  myLibrary.administration
-      .createTeacherMember("Mr. Smith", [Subject.english, Subject.sport]);
+  myLibrary.createTeacherMember("Mr. Smith", [Subject.english, Subject.sport]);
 
-  User? mrSmith = myLibrary.administration.members
-      .firstWhereOrNull((user) => user.name == "Mr. Smith");
+  User? mrSmith =
+      myLibrary.members.firstWhereOrNull((user) => user.name == "Mr. Smith");
 
   if (mrSmith != null && mrSmith is Teacher) {
     mrSmith.borrowItems([book1], myLibrary);
   }
 
-  myLibrary.accounting.generateReport(Reports.borrowedBooksByUsers);
-  myLibrary.accounting.generateReport(Reports.overdueItems);
-  myLibrary.accounting.generateReport(Reports.lastBorrowedBookByUser, mrSmith);
+  myLibrary.generateReport(Reports.borrowedBooksByUsers);
+  myLibrary.generateReport(Reports.overdueItems);
+  myLibrary.generateReport(Reports.lastBorrowedBookByUser, mrSmith);
 }
