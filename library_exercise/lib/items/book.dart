@@ -8,7 +8,7 @@ class Book extends LibraryItem {
     required super.author,
     required super.genre,
     required super.publisher,
-    super.isAvailable,
+    super.myAvailability,
     super.newId,
   }) : super(
           baseFee: 0.3,
@@ -22,7 +22,7 @@ class Book extends LibraryItem {
       publisher: json["title"] ?? "N/A",
       genre: json["genre"] ?? "N/A",
       newId: json["isbn"],
-      isAvailable: json["isAvailable"] ?? true,
+      myAvailability: json["isAvailable"] ?? true,
     );
   }
 

@@ -19,18 +19,6 @@ enum Genre {
 }
 
 abstract class LibraryItem {
-  final String title;
-  final String author;
-  final String publisher;
-  final Genre genre;
-  final String publicationID;
-  bool isAvailable;
-  DateTime? toReturnDate;
-  DateTime? borrowDate;
-  final double baseFee;
-  final double interestRate;
-  abstract final UnmodifiableMapView<String, dynamic> details;
-
   LibraryItem(
       {required this.title,
       required this.author,
@@ -38,9 +26,24 @@ abstract class LibraryItem {
       required this.genre,
       required this.baseFee,
       required this.interestRate,
-      this.isAvailable = true,
+      bool myAvailability = true,
       String? newId})
-      : publicationID = newId ?? Uuid().v1();
+      : publicationID = newId ?? Uuid().v1(),
+        _isAvailable = myAvailability;
+
+  final String title;
+  final String author;
+  final String publisher;
+  final Genre genre;
+  final String publicationID;
+  bool _isAvailable;
+  DateTime? toReturnDate;
+  DateTime? borrowDate;
+  final double baseFee;
+  final double interestRate;
+  abstract final UnmodifiableMapView<String, dynamic> details;
+
+  bool get isAvailable => _isAvailable;
 
   bool isOverdue() {
     if (toReturnDate == null) return false;
@@ -58,22 +61,22 @@ abstract class LibraryItem {
   }
 
   void borrow() {
-    if (!isAvailable) {
+    if (!_isAvailable) {
       print("The item is not available");
       return;
     }
-    isAvailable = false;
+    _isAvailable = false;
     borrowDate = DateTime.now();
     toReturnDate = borrowDate!.copyWith(day: borrowDate!.day + 12);
     print("you succesfully borrowed: ${toString()}.");
   }
 
   void returnItem() {
-    if (isAvailable) {
+    if (_isAvailable) {
       print("${toString()}, hasn't been borrowed yet");
       return;
     }
-    isAvailable = true;
+    _isAvailable = true;
     borrowDate = null;
     toReturnDate = null;
     print("Thanks for returning ${toString()}.");

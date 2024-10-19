@@ -8,7 +8,7 @@ class Magazine extends LibraryItem {
     required super.author,
     required super.publisher,
     required super.genre,
-    super.isAvailable,
+    super.myAvailability,
     super.newId,
   }) : super(
           baseFee: 0.2,
