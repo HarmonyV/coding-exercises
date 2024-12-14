@@ -84,6 +84,6 @@ abstract class LibraryItem {
 
   @override
   String toString() {
-    return "$title with the ID: $publicationID";
+    return "$title - ID: $publicationID";
   }
 }

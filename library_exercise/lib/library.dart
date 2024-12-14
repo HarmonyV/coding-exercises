@@ -60,8 +60,6 @@ class Library {
     if (searchTerm.isEmpty) {
       print("These are all the available Items you can borrow: $sortedList");
     }
-    print(
-        "These are all item in ${acces.name} that fit '$searchTerm': $sortedList");
   }
 
   // asuming you have a form for each user type, this is enought.

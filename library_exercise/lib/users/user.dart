@@ -17,6 +17,7 @@ class User {
   final _borrowedItems = <LibraryItem>[];
   final _borrowedHistory = <LibraryItem>[];
   final _returnedItemsWithFee = <String, double>{};
+  var _payableAmountOwed = 0.0;
 
   static const int defaultBorrowLimit = 2;
 
@@ -36,16 +37,16 @@ class User {
         _borrowedItems.where((i) => i.isOverdue() == true).toList());
   }
 
-  double get amountOwed {
+  double get payableAmountOwed => _payableAmountOwed;
+
+  double get totalAmountOwed {
     var sum = 0.0;
 
     for (final item in overdueItems) {
       sum += item.overdueFee();
     }
 
-    for (final fee in _returnedItemsWithFee.values) {
-      sum += fee;
-    }
+    sum += _payableAmountOwed;
 
     return sum;
   }
@@ -74,6 +75,7 @@ class User {
       if (overdueItems.contains(item)) {
         final fee = item.overdueFee();
         _returnedItemsWithFee[item.title] = item.overdueFee();
+        _payableAmountOwed += fee;
 
         print(
             "the book: ${item.title} is overdue and you need to pay a fee of $fee \$");
@@ -85,7 +87,7 @@ class User {
   }
 
   bool canBorrowMoreItems() {
-    if (overdueItems.isNotEmpty || amountOwed > 0) return false;
+    if (overdueItems.isNotEmpty || totalAmountOwed > 0) return false;
 
     return !hasReachedLimit();
   }
@@ -107,6 +109,10 @@ class User {
     if (_borrowedItems.length >= borrowLimit) return true;
 
     return false;
+  }
+
+  void payFees(double value) {
+    _payableAmountOwed -= value;
   }
 
   @override
